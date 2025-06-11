@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Faucet - DZX-CORE</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; padding: 40px 0; }
+        .header h1 { font-size: 3em; margin-bottom: 10px; }
+        .faucet-box {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        .wallet-input {
+            width: 100%;
+            max-width: 500px;
+            padding: 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .claim-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .claim-btn:hover { background: #45a049; }
+        .timer { font-size: 1.5em; color: #FFD700; margin: 20px 0; }
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2em; }
+            .faucet-box { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Crypto Faucet</h1>
+            <p>Ganhe criptomoedas gratuitas a cada hora</p>
+        </div>
+        <div class="faucet-box">
+            <h2>Claim Gratuito</h2>
+            <input type="text" id="wallet" class="wallet-input" placeholder="Digite seu endereço de carteira...">
+            <br>
+            <button class="claim-btn" onclick="claimTokens()">Claim Tokens</button>
+            <div id="timer" class="timer">Próximo claim em: <span id="countdown">00:00:00</span></div>
+            <div id="result" style="margin-top: 20px; font-size: 18px;"></div>
+        </div>
+    </div>
+    <script>
+        function claimTokens() {
+            const wallet = document.getElementById('wallet').value.trim();
+            const result = document.getElementById('result');
+            
+            if (!wallet || wallet.length < 20) {
+                result.innerHTML = 'Digite um endereço de carteira válido';
+                result.style.color = '#ff6b6b';
+                return;
+            }
+            
+            const amount = (Math.random() * 0.009 + 0.001).toFixed(6);
+            result.innerHTML = `Sucesso! Você recebeu ${amount} tokens`;
+            result.style.color = '#4CAF50';
+            
+            localStorage.setItem('lastClaim', Date.now());
+            updateTimer();
+        }
+        
+        function updateTimer() {
+            const lastClaim = localStorage.getItem('lastClaim');
+            const oneHour = 60 * 60 * 1000;
+            
+            if (!lastClaim) {
+                document.getElementById('countdown').textContent = 'Disponível agora!';
+                return;
+            }
+            
+            const timeLeft = oneHour - (Date.now() - lastClaim);
+            if (timeLeft <= 0) {
+                document.getElementById('countdown').textContent = 'Disponível agora!';
+            } else {
+                const hours = Math.floor(timeLeft / (60 * 60 * 1000));
+                const minutes = Math.floor((timeLeft % (60 * 60 * 1000)) / (60 * 1000));
+                const seconds = Math.floor((timeLeft % (60 * 1000)) / 1000);
+                document.getElementById('countdown').textContent = 
+                    `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+        }
+        
+        setInterval(updateTimer, 1000);
+        updateTimer();
+    </script>
+</body>
+</html>
